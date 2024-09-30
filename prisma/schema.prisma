@@ -1,0 +1,63 @@
+enum Type_user {
+  ADMIN
+  USER
+}
+
+enum ConfirmClient {
+  NONE
+  CONFIRM
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id        Int       @id @default(autoincrement())
+  name      String
+  password  String
+  type_user Type_user
+}
+
+model Category {
+  id          Int           @id @default(autoincrement())
+  name        String
+  Products    Products[]
+  SubCategory SubCategory[]
+}
+
+model SubCategory {
+  id          Int        @id @default(autoincrement())
+  name        String
+  category_id Int
+  Products    Products[]
+
+  category Category @relation(fields: [category_id], references: [id])
+}
+
+model Products {
+  id             Int    @id @default(autoincrement())
+  name           String
+  precio         Float  @default(0.00)
+  stock          Int    @default(0)
+  description    String @db.Text
+  ficha_tecnica  Json
+  category_id    Int
+  subCategory_id Int
+
+  category    Category    @relation(fields: [category_id], references: [id])
+  subCaregory SubCategory @relation(fields: [subCategory_id], references: [id])
+}
+
+model Clients {
+  id       Int           @id @default(autoincrement())
+  name     String
+  email    String
+  password String
+  confirm  ConfirmClient @default(NONE)
+}
